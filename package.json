@@ -1,8 +1,8 @@
 {
-  "name": "plugin-chat-sms-transfer",
-  "version": "1.0.0",
+  "name": "plugin-frontline-chat-sms-transfer",
+  "version": "0.0.1",
   "private": true,
-  "description": "The Chat and SMS Transfers for Flex plugin helps contact center administrators set up transferring of Chats and SMS between Agents",
+  "description": "Plugin that helps Flex contact center agents transfer calls to Frontline agents or queues",
   "scripts": {
     "postinstall": "flex-plugin pre-script-check",
     "lint": "eslint --ext js src/ functions/functions/",
@@ -10,16 +10,22 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "debug": "^4.3.2",
-    "flex-plugin-scripts": "4.1.0",
-    "react": "16.5.2",
-    "react-dom": "16.5.2"
+    "@emotion/css": "^11.9.0",
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
+    "@material-ui/core": "^4.12.4",
+    "@twilio-paste/core": "^10.14.0",
+    "@twilio-paste/icons": "^5.7.0",
+    "@twilio/flex-plugin-scripts": "5.1.2",
+    "prop-types": "^15.7.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-redux": "^7.2.8",
+    "react-router-dom": "^5.3.3",
+    "redux": "^4.2.0"
   },
   "devDependencies": {
-    "@twilio/flex-ui": "^1",
-    "eslint": "^7.31.0",
-    "eslint-config-twilio": "^1.35.1",
-    "husky": "^7.0.1",
-    "react-test-renderer": "16.5.2"
+    "@twilio/flex-ui": "2.0.0-beta.1",
+    "react-test-renderer": "17.0.2"
   }
 }

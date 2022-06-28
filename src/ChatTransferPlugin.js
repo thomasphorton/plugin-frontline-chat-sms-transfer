@@ -1,4 +1,4 @@
-import { FlexPlugin } from 'flex-plugin';
+import { FlexPlugin } from '@twilio/flex-plugin';
 
 import { setUpActions, setUpComponents, setUpNotifications } from './helpers';
 
