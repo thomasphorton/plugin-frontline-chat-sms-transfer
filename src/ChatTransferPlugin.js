@@ -17,7 +17,7 @@ export default class ChatTransferPlugin extends FlexPlugin {
    * @param manager { import('@twilio/flex-ui').Manager }
    */
   init(flex, manager) {
-    setUpComponents();
+    setUpComponents(flex, manager);
     setUpNotifications();
     setUpActions();
   }
