@@ -73,7 +73,6 @@ exports.handler = JWEValidator(async function (context, event, callback) {
   response.appendHeader('Access-Control-Allow-Origin', '*');
   response.appendHeader('Access-Control-Allow-Methods', 'OPTIONS, POST, GET');
   response.appendHeader('Access-Control-Allow-Headers', 'Content-Type, X-Twilio-Signature');
-  response.appendHeader('X-potestop-potestoop', 'asdfasdfasdf');
 
   return callback(null, response);
 });

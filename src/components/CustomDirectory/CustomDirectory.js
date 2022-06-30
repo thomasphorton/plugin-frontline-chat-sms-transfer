@@ -108,7 +108,8 @@ class CustomDirectory extends React.Component {
     this.props.invokeTransfer({
       task: this.props.task,
       options: options,
-      targetSid: worker.sid
+      targetSid: worker.sid,
+      targetWorker: worker
     })
   }
 

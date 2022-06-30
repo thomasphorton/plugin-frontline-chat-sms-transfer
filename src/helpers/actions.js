@@ -35,8 +35,9 @@ export const transferOverride = async (payload, original) => {
   const body = {
     Token: manager.user.token,
     taskSid: payload.task.taskSid,
-    targetSid: payload.targetSid,
-    workerName: manager.user.identity,
+    taskAttributes: payload.task.attributes,
+    flexWorker: manager.user,
+    frontlineWorker: payload.targetWorker
   };
 
   // initiate the transfer
