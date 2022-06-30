@@ -44,31 +44,29 @@ exports.handler = JWEValidator(async function (context, event, callback) {
     friendlyName: taskAttributes.customerAddress
   });
 
-  // add the customer associated with the current task to the conversation
-  const customerParticipant = await frontlineClient.conversations.conversations(frontlineConversation.sid)
-    .participants
-    .create({
-        'messagingBinding.address': taskAttributes.customerAddress//,
-       //messagingBinding.proxyAddress': '+17034207373'
-      });
-
-  // add the selected frontline worker as a participant to the conversation
-  const flexAgentParticipant = await frontlineClient.conversations.conversations(frontlineConversation.sid)
+  // add the selected frontline worker to the conversation
+  const frontlineAgentParticipant = await frontlineClient.conversations.conversations(frontlineConversation.sid)
   .participants
   .create({
       'identity': frontlineWorker.friendlyName,
       'messagingBinding.projectedAddress': '+17034207373'
     });
 
-  /*
+  // add the customer to the conversation
+  const customerParticipant = await frontlineClient.conversations.conversations(frontlineConversation.sid)
+  .participants
+  .create({
+      'messagingBinding.address': taskAttributes.customerAddress
+    });
+
   // add a message to the conversation with some minimal amount of context
   const message = await frontlineClient.conversations.conversations(frontlineConversation.sid)
     .messages
     .create({
-      body: 'Transfer from Flex Agent ' + flexWorker.identity 
+      author: frontlineWorker.friendlyName,
+      body: 'Hi ' + taskAttributes.customerAddress + '! ' + flexWorker.identity + ' told me that you were looking for assistance. How can I help you today?'
     });
-    */
-   
+
   /*
    * set up attributes of the new task to link them to
    * the original task in Flex Insights
