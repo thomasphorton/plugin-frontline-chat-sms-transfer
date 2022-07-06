@@ -24,8 +24,6 @@ export const setUpComponents = (flex, manager) => {
       <CustomDirectory
         runtimeDomain   = { process.env.REACT_APP_SERVERLESS_FUNCTION_DOMAIN }
         getToken        = { () => manager.store.getState().flex.session.ssoTokenPayload.token }
-        teamLeadSid     = { manager.workerClient.attributes.team_lead_sid || manager.workerClient.sid }
-        skipWorkerIf    = { (worker) => worker.sid === manager.workerClient.sid }
         invokeTransfer  = { (params) => { flex.Actions.invokeAction("TransferTask", params); flex.Actions.invokeAction("HideDirectory")} }
       />
     </flex.Tab>

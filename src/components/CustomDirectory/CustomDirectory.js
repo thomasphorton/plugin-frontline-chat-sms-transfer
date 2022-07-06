@@ -20,12 +20,12 @@ class CustomDirectory extends React.Component {
    * whenever the directory is opened
    */
   componentDidMount() {
-    // Every time this component mounts, pull the team directory from Twilio
+    // Every time this component mounts, pull the worker directory from Frontline
     this.getDirectoryEntries();
   }
 
   /**
-   * Pulls the list of all workers on this worker's team, then updates this
+   * Pulls the list of all Frontline workers, then updates this
    * component's State with the list
    */
   async getDirectoryEntries() {
@@ -60,7 +60,7 @@ class CustomDirectory extends React.Component {
 
   /**
    * Returns a list of workers from this component's State, filtered through
-   * the entered search term and the `skipWorkerIf` funciton from props
+   * the entered search term
    */
   filteredDirectory() {
     if (!this.state.directoryEntries) {
@@ -68,9 +68,6 @@ class CustomDirectory extends React.Component {
     }
     const { searchTerm } = this.state;
     return this.state.directoryEntries.filter(worker => {
-      if (this.props.skipWorkerIf && this.props.skipWorkerIf(worker)) {
-        return false;
-      }
       if (!searchTerm) {
         return true;
       }

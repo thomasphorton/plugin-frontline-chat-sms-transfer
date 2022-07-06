@@ -2,15 +2,46 @@
 <img  src="https://static0.twilio.com/marketing/bundles/marketing/img/logos/wordmark-red.svg"  alt="Twilio"  width="250"  />
 </a>
 
-# Chat and SMS Transfers for Flex
+# Frontline Chat and SMS Transfers
 
-The Chat and SMS Transfers for Flex plugin helps contact center administrators set up transferring of Chats and SMS between Agents.
+The Frontline Chat and SMS Transfers plugin helps contact center agents transfer Chats and SMS to Frontline workers.
 
-**As of the writing of this document, Flex does not natively support transferring of non-voice tasks. To track the addition of Chat and SMS transfers as a feature, visit the [Flex Release Notes](https://www.twilio.com/docs/flex/release-notes) page.**
+This plugin is based on both the [Chat and SMS Transfers](https://www.twilio.com/docs/flex/solutions-library/chat-and-sms-transfers) plugin from the Twilio Flex solutions library and the [Custom Directory](https://github.com/twilio-professional-services/plugin-custom-directory) plugin. It includes code for [Twilio Functions](https://www.twilio.com/docs/runtime/functions) as well as frontend UI code in the form of a [Flex plugin](https://www.twilio.com/docs/flex/quickstart/getting-started-plugin).
 
-**Note if you have deployed this plugin between March 26 and August 11, 2020:** We recently made a fix that cleans up the channels of your agents when they perform a chat or SMS transfer. This will ensure that your agents don’t hit the limit of the channels they can join. We recommend installing the latest version of the plugin in order to get this change. See [Plugin Deployment instructions](#) to redeploy the plugin and [GitHub Issue #21](https://github.com/twilio-professional-services/plugin-chat-sms-transfer/issues/21) for more details on the bug.
+## Status
 
----
+This project is currently **Feature-Complete**. There is still some testing, polish, and documentation work to do, but all feature requirements have been satisfied. Please refer to the TODO list for details.
+### TODO
+- [X] Fork existing [Custom Directory Plugin](https://github.com/trogers-twilio/plugin-custom-directory/) sample code
+- [X] Cleanup the sample code
+- [X] Upgrade Flex to latest
+- [X] Add Serverless structure
+- [X] Implement & incorporate Function for pulling team members
+  - [X] Modify all workers
+  - [X] Build Function
+  - [X] Incorporate function into the Directory Component
+- [X] Incorporate Transfer functionality from the [Native Flex Dialpad Add-on
+ Plugin](https://github.com/twilio-professional-services/flex-dialpad-addon-plugin)
+  - [X] Refactor Transfer button structure (currently errors)
+  - [X] Pull in Warm Transfers _note: Using Actions framework "TransferTask" rather than the addon strategy_
+  - [X] Pull in Cold Transfers _note: Using Actions framework "TransferTask" rather than the addon strategy_
+- [ ] Enhancements/Bugfixes
+  - [X] Validate Twilio Signature
+  - [X] Sort workers alphabetically
+  - [X] Tab to front
+  - [X] "Directory" --> "Team"
+  - [ ] Add Flex Signature check
+  - [ ] Migrate `team_lead_sid` to `team_id` to leverage pre-existing Flex Insights standards and tie into reporting
+- [ ] Test
+  - [ ] Unmodified workers
+  - [ ] Invalid Signature
+  - [ ] Function errors
+  - [ ] Transfer failures
+- [ ] Flesh out the README
+  - [ ] Demo
+    - [ ] Media Branch
+    - [ ] Recording
+  - [ ] Setup/Configuration
 
 ## Set up
 
