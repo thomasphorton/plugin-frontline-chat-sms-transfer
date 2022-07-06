@@ -24,7 +24,7 @@ exports.handler = JWEValidator(async function (context, event, callback) {
   const { taskSid, flexWorker, frontlineWorker } = event;
 
   // retrieve task attributes
-  const task = await client.taskrouter.workspaces(context.TWILIO_WORKSPACE_SID).tasks(taskSid).fetch();
+  const task = await client.taskrouter.workspaces(context.WORKSPACE_SID).tasks(taskSid).fetch();
   let taskAttributes = JSON.parse(task.attributes);
 
   var frontlineConversation;
@@ -65,7 +65,7 @@ exports.handler = JWEValidator(async function (context, event, callback) {
     taskAttributes.frontlineConversationSid = frontlineConversation.sid;
 
     await client.taskrouter
-      .workspaces(context.TWILIO_WORKSPACE_SID)
+      .workspaces(context.WORKSPACE_SID)
       .tasks(taskSid)
       .update({
         attributes: JSON.stringify(taskAttributes),

@@ -4,36 +4,35 @@
 
 # Frontline Chat and SMS Transfers
 
-The Frontline Chat and SMS Transfers plugin helps contact center agents transfer Chats and SMS to Frontline workers.
+The Frontline Chat and SMS Transfers plugin helps contact center agents transfer customer Chats and SMS conversations to Frontline workers.
 
 This plugin is based on both the [Chat and SMS Transfers](https://www.twilio.com/docs/flex/solutions-library/chat-and-sms-transfers) plugin from the Twilio Flex solutions library and the [Custom Directory](https://github.com/twilio-professional-services/plugin-custom-directory) plugin. It includes code for [Twilio Functions](https://www.twilio.com/docs/runtime/functions) as well as frontend UI code in the form of a [Flex plugin](https://www.twilio.com/docs/flex/quickstart/getting-started-plugin).
 
 ## Status
 
 This project is currently **Feature-Complete**. There is still some testing, polish, and documentation work to do, but all feature requirements have been satisfied. Please refer to the TODO list for details.
+
 ### TODO
-- [X] Fork existing [Custom Directory Plugin](https://github.com/trogers-twilio/plugin-custom-directory/) sample code
-- [X] Cleanup the sample code
-- [X] Upgrade Flex to latest
+- [X] Upgrade Flex to latest (UI 2.0)
 - [X] Add Serverless structure
-- [X] Implement & incorporate Function for pulling team members
-  - [X] Modify all workers
+- [X] Implement & incorporate Function for pulling Frontline agents 
   - [X] Build Function
   - [X] Incorporate function into the Directory Component
-- [X] Incorporate Transfer functionality from the [Native Flex Dialpad Add-on
- Plugin](https://github.com/twilio-professional-services/flex-dialpad-addon-plugin)
-  - [X] Refactor Transfer button structure (currently errors)
-  - [X] Pull in Warm Transfers _note: Using Actions framework "TransferTask" rather than the addon strategy_
-  - [X] Pull in Cold Transfers _note: Using Actions framework "TransferTask" rather than the addon strategy_
 - [ ] Enhancements/Bugfixes
   - [X] Validate Twilio Signature
   - [X] Sort workers alphabetically
   - [X] Tab to front
-  - [X] "Directory" --> "Team"
+  - [X] "Directory" --> "Frontline"
   - [ ] Add Flex Signature check
-  - [ ] Migrate `team_lead_sid` to `team_id` to leverage pre-existing Flex Insights standards and tie into reporting
+  - [ ] Leverage pre-existing Flex Insights standards if possible for tracking the transfer to Frontline and tie into reporting
+  - [ ] Determine the right pattern for selecting the conversation proxy address for the selected Frontline agent
+  - [ ] Determine the right pattern for retrieving the "friendly" name for the Flex and Frontline agents
+  - [ ] Determine the right pattern for retrieving the customer name
+  - [ ] Add logic for updating an existing Frontline conversation instead of creating a new one if a conversation already exists between the customer and the Frontline agent
+  - [ ] Remove the "warm transfer" option from the Frontline custom directory UI
+  - [ ] Decide if we want to downgrade to Flex UI 1.x or not
+  - [ ] FUTURE - Add support for other channels, e.g. voice, WhatsApp, etc.
 - [ ] Test
-  - [ ] Unmodified workers
   - [ ] Invalid Signature
   - [ ] Function errors
   - [ ] Transfer failures
@@ -67,8 +66,7 @@ All contributions and improvements to this plugin are welcome! To run the tests 
 
 ### Twilio Account Settings
 
-Before we begin, we need to collect
-all the config values we need to run this Flex plugin:
+Before we begin, we need to collect all the config values we need to run this Flex plugin:
 
 | Config&nbsp;Value | Description                                                                                                                                            |
 | :---------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -79,11 +77,11 @@ all the config values we need to run this Flex plugin:
 
 ## Plugin Details
 
-The Chat and SMS Transfers for Flex plugin adds a **Transfer** button near the **End Chat** button that comes out of the box with Flex. Clicking this button opens up the default [WorkerDirectory Flex component](https://www.twilio.com/docs/flex/ui/components#workerdirectory) with Agents and Queues tabs. Upon selecting an agent or a queue, this plugin will initiate a transfer of the chat task to the specified worker (agent) or queue.
+The Frontline Chat and SMS Transfers plugin adds a **Transfer** button near the **End Chat** button that comes out of the box with Flex. Clicking this button opens up the standard [WorkerDirectory Flex component](https://www.twilio.com/docs/flex/ui/components#workerdirectory) with Agents and Queues tab.  To this component is added a new custom directory tab that contains a list of Frontline workers. Upon selecting a Frontline agent, this plugin will initiate a transfer of the customer chat or SMS conversation to the specified Frontline worker (agent).
 
 ![Chat Transfer UI](https://indigo-bombay-5783.twil.io/assets/chat-transfer.gif)
 
-Because Flex does not natively support chat and SMS transfers, this plugin works by creating a new task and routing it through your workflow as normal. Subsequent "transfer" tasks are linked to the original task to be compatible with Flex Insights reporting.
+Because Flex does not natively support transferring tasks to Frontline, this plugin works by creating a new Frontline conversation. The original Flex task is linked to the new Frontline conversation to be compatible with Flex Insights reporting.
 
 It is up to you to implement the necessary TaskRouter routing rules to send the task to the specified queue or worker. To aid you in this, three new attributes within [`functions/transfer-chat.js`](functions/functions/transfer-chat.js) will be added to your tasks: `targetSid`, `transferTargetType`, and `ignoreAgent`:
 
@@ -111,7 +109,7 @@ After the above requirements have been met:
   npm install
   ```
 
-3. [Deploy your Twilio Function](#twilio-serverless-deployment).
+3. [Deploy your Twilio Functions](#twilio-serverless-deployment).
 
 4. Set your environment variables.
 
@@ -137,7 +135,7 @@ You need to deploy the function associated with the Chat and SMS Transfers plugi
 
 #### Pre-deployment Steps
 
-1. Change into the functions directory and rename `.env.example`.
+1. Change into the serverless directory and rename `.env.example`.
 
     ```bash
     cd functions && cp .env.example .env
@@ -145,14 +143,17 @@ You need to deploy the function associated with the Chat and SMS Transfers plugi
 
 2. Open `.env` with your text editor and set the environment variables mentioned in the file.
 
-    ```
-    TWILIO_ACCOUNT_SID=ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    TWILIO_AUTH_TOKEN=9yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
-    TWILIO_WORKSPACE_SID=WSXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    TWILIO_CHAT_TRANSFER_WORKFLOW_SID=WWXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    ```
+| Environment&nbsp;Variable | Description                                                                                                                                            |
+| :---------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ACCOUNT_SID  | Your primary Twilio Flex account identifier - find this [in the Console](https://www.twilio.com/console).                                                   |
+| AUTH_TOKEN        | Used to create an API key for future CLI access to your Twilio Flex Account - find this [in the Console](https://www.twilio.com/console).                   |
+| WORKSPACE_SID     | Your Flex Task Assignment workspace SID - find this [in the Console TaskRouter Workspaces page](https://www.twilio.com/console/taskrouter/workspaces). |
+| FRONTLINE_ACCOUNT_SID  | Your primary Twilio Frontline account identifier - find this [in the Console](https://www.twilio.com/console).                                                   |
+| FRONTLINE_AUTH_TOKEN        | Used to create an API key for future CLI access to your Twilio Frontline Account - find this [in the Console](https://www.twilio.com/console).                   |
+| FRONTLINE_WORKSPACE_SID     | Your Frontline Task Router Workspace SID - find this [in the Console TaskRouter Workspaces page](https://www.twilio.com/console/taskrouter/workspaces). |
 
-3. Deploy the Twilio function to your account using the Twilio CLI:
+
+3. Deploy your Twilio Serverless project to your Flex account using the Twilio CLI:
   
     ```bash
     cd functions && twilio serverless:deploy
@@ -163,13 +164,13 @@ You need to deploy the function associated with the Chat and SMS Transfers plugi
     # ✔ Serverless project successfully deployed
     
     # Deployment Details
-    # Domain: https://plugin-chat-sms-transfer-functions-xxxx-dev.twil.io
+    # Domain: https://plugin-frontline-chat-sms-transfer-functions-xxxx-dev.twil.io
     # Service:
     #    chat-transfer (ZSxxxx)
     # ..
     ```
 
-4. Copy and save the domain returned when you deploy a function. You will need it in the next step.
+4. Copy and save the domain returned when you deploy your functions. You will need it in the next step.
 
 If you forget to copy the domain, you can also find it by navigating to [Functions > API](https://www.twilio.com/console/functions/api) in the Twilio Console.
 
@@ -179,9 +180,9 @@ If you forget to copy the domain, you can also find it by navigating to [Functio
 
 Once you have deployed the function, it is time to deploy the plugin to your Flex instance.
 
-You need to modify the source file to mention the serverless domain of the function that you deployed previously.
+You need to modify the source file to include the serverless domain of the function that you deployed previously.
 
-1. In the main directory rename `.env.example`.
+1. In the plugin root directory rename `.env.example`.
 
     ```bash
     cp .env.example .env
@@ -190,84 +191,45 @@ You need to modify the source file to mention the serverless domain of the funct
 
     ```
     # Paste the Function deployment domain
-    REACT_APP_SERVERLESS_FUNCTION_DOMAIN='https://plugin-chat-sms-transfer-functions-xxxx-dev.twil.io';
+    REACT_APP_SERVERLESS_FUNCTION_DOMAIN='https://plugin-frontline-chat-sms-transfer-functions-xxxx-dev.twil.io';
     ```
 3. When you are ready to deploy the plugin, run the following in a command shell:
 
     ```bash
-    twilio flex:plugins:deploy --major --changelog "Update the plugin to use Builder v4" --description "Chat and SMS Cold Transfers in Flex"
+    twilio flex:plugins:deploy --major --changelog "Initial release" --description "Chat and SMS Transfers to Frontline"
     ```
 
 #### Example Output
 
 ```
-✔ Validating deployment of plugin plugin-chat-sms-transfer
-⠧ Compiling a production build of plugin-chat-sms-transferPlugin plugin-chat-sms-transfer was successfully compiled with some warnings.
-✔ Compiling a production build of plugin-chat-sms-transfer
-✔ Uploading plugin-chat-sms-transfer
-✔ Registering plugin plugin-chat-sms-transfer with Plugins API
-✔ Registering version v2.0.0 with Plugins API
+✔ Validating deployment of plugin plugin-frontline-chat-sms-transfer
+⠧ Compiling a production build of plugin-frontline-chat-sms-transferPlugin plugin-frontline-chat-sms-transfer was successfully compiled with some warnings.
+✔ Compiling a production build of plugin-frontline-chat-sms-transfer
+✔ Uploading plugin-frontline-chat-sms-transfer
+✔ Registering plugin plugin-frontline-chat-sms-transfer with Plugins API
+✔ Registering version v1.0.0 with Plugins API
 
-🚀 Plugin (private) plugin-chat-sms-transfer@2.0.0 was successfully deployed using Plugins API
+🚀 Plugin (private) plugin-frontline-chat-sms-transfer@1.0.0 was successfully deployed using Plugins API
 
 Next Steps:
-Run $ twilio flex:plugins:release --plugin plugin-chat-sms-transfer@2.0.0 --name "Autogenerated Release 1602189036080" --description "The description of this Flex Plugin Configuration" to enable this plugin on your Flex application
+Run $ twilio flex:plugins:release --plugin plugin-frontline-chat-sms-transfer@1.0.0 --name "Autogenerated Release 1602189036080" --description "The description of this Flex Plugin Configuration" to enable this plugin on your Flex application
 ```
 
 ## View your plugin in the Plugins Dashboard
 
 After running the suggested next step with a meaningful name and description, navigate to the [Plugins Dashboard](https://flex.twilio.com/admin/) to review your recently deployed and released plugin. Confirm that the latest version is enabled for your contact center.
 
-You are all set to test Chat and SMS transfers on your Flex application!
+You are all set to test Frontline Chat and SMS transfers in your Flex application!
 
 ---
 
 ## Changelog
 
-### 2.0.0
-
-**November 18, 2020**
-
-- Updated plugin to use the latest Flex plugin for the Twilio CLI. 
-- Updated prerequisites and deployment instructions in the README. For more details, see [Keeping Plugins Up-to-Date](https://www.twilio.com/docs/flex/developer/plugins/updating).
-
-### 1.3.1
-
-**September 25, 2020**
-
-- Added full test suite and GitHub actions. Updated readme with instructions on how to run tests.
-
-### 2.0.0
-
-**September 25, 2020**
-
-- Added error handling that rejoins the original agent to the chat session should an error occur during the transfer request.
-
-### 1.2.0
-
-**September 4, 2020**
-
-- We now fully bypass the Flex ChatOrchestrator object and manually remove agent's from chat sessions. This ensures agents don't hit the 250 Chat Channel limit while transfering chat sessions.
-
-### 1.1.0
-
-**August 20, 2020**
-
-- Twilio Channel Janitor will no longer clean up chat channels as soon as they are transferred. Now you can operate this plugin even if you have the Janitor service enabled on your Flex Flow.
-- Unfortunately, we can't make warm transfers work with this new update, so all transfers are now "cold" (meaning the initiating agent will have their task immediately completed).
-- We had previously been hardcoding `http://` protocol in the `fetch` call to the associated Twilio function. This has been removed and your `SERVERLESS_FUNCTION_DOMAIN` should now specify your desired protocol. This makes transitioning from local development to production a little easier.
-
-### 1.0.1
-
-**August 13, 2020**
-
-- Updated README - added changelog
-
 ### 1.0.0
 
-**August 11, 2020**
+**July 6, 2022**
 
-- Fixes [GitHub Issue #21](https://github.com/twilio-professional-services/plugin-chat-sms-transfer/issues/21)
+- Initial release
 
 
 ## Disclaimer
