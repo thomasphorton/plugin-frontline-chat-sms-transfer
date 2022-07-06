@@ -41,7 +41,7 @@ class CustomDirectory extends React.Component {
         'Content-Type': 'application/json',
       }
     };
-   let url = Url.resolve(this.props.runtimeDomain, 'getTeamMembers');
+   let url = Url.resolve(this.props.runtimeDomain, 'get-frontline-workers');
    
     // Make it happen!
     let { data } = await Axios.post(url, axiosBody, axiosOptions);
