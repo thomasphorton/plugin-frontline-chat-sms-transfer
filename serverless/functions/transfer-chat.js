@@ -44,12 +44,15 @@ exports.handler = JWEValidator(async function (context, event, callback) {
     friendlyName: taskAttributes.customerAddress
   });
 
+  //get phone number for selected frontline worker
+  const frontlinePhoneNumber = (await frontlineClient.incomingPhoneNumbers.list({limit: 1})).pop().phoneNumber;
+
   // add the selected frontline worker to the conversation
   const frontlineAgentParticipant = await frontlineClient.conversations.conversations(frontlineConversation.sid)
   .participants
   .create({
       'identity': frontlineWorker.friendlyName,
-      'messagingBinding.projectedAddress': '+17034207373'
+      'messagingBinding.projectedAddress': frontlinePhoneNumber
     });
 
   // add the customer to the conversation
@@ -59,8 +62,16 @@ exports.handler = JWEValidator(async function (context, event, callback) {
       'messagingBinding.address': taskAttributes.customerAddress
     });
 
-  // add a message to the conversation with some minimal amount of context
-  const message = await frontlineClient.conversations.conversations(frontlineConversation.sid)
+  // send a message to the customer on the original conversation to let them know that they should expect a communication from the frontline agent at a specific number
+  const message1 = await client.conversations.conversations(taskAttributes.conversationSid)
+  .messages
+  .create({
+    author: frontlineWorker.friendlyName,
+    body: 'Thank you ' + taskAttributes.customerAddress + '. You should expect to hear from ' + frontlineWorker.friendlyName + ' on '  + frontlinePhoneNumber
+  });
+
+  // send a message to the customer and the frontline agent on the new conversation that provides some context to the frontline agent about the transfer
+  const message2 = await frontlineClient.conversations.conversations(frontlineConversation.sid)
     .messages
     .create({
       author: frontlineWorker.friendlyName,
@@ -143,6 +154,7 @@ exports.handler = JWEValidator(async function (context, event, callback) {
   */
   responseBody.success = true;
   responseBody.payload.conversationSid = frontlineConversation.sid;
+  responseBody.payload.frontlinePhoneNumber = frontlinePhoneNumber;
 
   response.setBody(responseBody);
 
