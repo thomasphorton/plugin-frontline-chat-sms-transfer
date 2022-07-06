@@ -66,7 +66,18 @@ All contributions and improvements to this plugin are welcome! To run the tests 
 
 ## Plugin Details
 
-The Frontline Chat and SMS Transfers plugin adds a **Transfer** button near the **End Chat** button that comes out of the box with Flex. Clicking this button opens up the standard [WorkerDirectory Flex component](https://www.twilio.com/docs/flex/ui/components#workerdirectory) with Agents and Queues tab.  To this component is added a new custom directory tab that contains a list of Frontline workers. Upon selecting a Frontline agent, this plugin will initiate a transfer of the customer chat or SMS conversation to the specified Frontline worker (agent).
+The Frontline Chat and SMS Transfers plugin adds a **Transfer** button near the **End Chat** button that comes out of the box with Flex. Clicking this button opens up the standard [WorkerDirectory Flex component](https://www.twilio.com/docs/flex/ui/components#workerdirectory) with Agents and Queues tab.  A new custom directory tab is added to the standard WorkerDirectory component that contains a list of Frontline agents (TaskRouter [Workers](https://www.twilio.com/docs/taskrouter/api/worker)). Upon selecting a Frontline agent from the list and clicking the transfer icon, the plugin will initiate a transfer of the customer chat or SMS conversation to the specified Frontline agent.
+
+Key Points to Note
+
+1. Frontline does not use Twilio TaskRouter in the same way as Flex. TaskRouter is only used to store the list of available Frontline agents. Frontline doesn't use Tasks for assigning work to agents. Instead it leverages the Twilio Conversations API. Conversations are assigned to Frontline workers directly via the [Frontline Integration Service](https://www.twilio.com/docs/frontline/frontline-integration-service).
+
+2. Twilio Flex and Frontline cannot share the same Twilio account. As such, for the purposes of this plugin implementation, the concept of "transferring" a conversation from Flex to Frontline entails creating a new Conversation in Frontline and then adding the customer from the original Flex conversation and the Frontline agent as Participants.
+
+3. When creating a new Frontline Conversation between the Frontline agent and customer, the plugin adds an initial message to the conversation that provides some basic context, including the identity of the customer and the Flex agent. This should be modified to meet your specific needs. Assuming the customer identity is stored in Frontline's associated CRM system, providing the customer identity in the initial message may not be required. 
+
+4. In addition to creating the new Frontline Conversation, the plugin will also add a message to the original Flex conversation between the customer and the Flex agent to let the customer know to expect to receive a follow up communication from the Frontline agent on a specific number. The reason for this is to validate the identity of the Frontline agent to the customer. This step is optional but recommended. If taking this approach, the message should be modified to meet your specific needs.
+
 
 ---
 
