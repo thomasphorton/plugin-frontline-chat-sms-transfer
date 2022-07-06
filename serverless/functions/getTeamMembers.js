@@ -15,34 +15,14 @@ exports.handler = JWEValidator(async function (context, event, callback) {
     }
   } // and this will be the Body of the response
 
-  try { /*
-    if (Object.keys(event).length === 0) {
-      // This handles the case where NO parameters were sent, allowing for empty Options request (since we don't have access to the Request method/headers)
-      throw {
-        status: 200,
-        code: 60200,
-        message: "No body sent."
-      }
-    }
+  try { 
 
-    if (!event.teamLeadSid) {
-      // This handles the case where a specific parameter was not sent
-      throw {
-        status: 400,
-        code: 60200,
-        message: "Request must include a teamLeadSid"
-      }
-    }
-    */
-
-    // First pull our workers with a targetWorkersExpression
+    // First pull our Frontline workers
     const workers = await client
       .taskrouter
       .workspaces(context.FRONTLINE_WORKSPACE_SID)
       .workers
-      .list({
-        //targetWorkersExpression: `team_lead_sid = "${event.teamLeadSid}"`
-      });
+      .list({ });
 
     // Now let's define our response Worker objects
     const workerObjects = workers.map((worker) => {
