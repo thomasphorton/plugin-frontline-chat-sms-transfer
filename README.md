@@ -68,7 +68,7 @@ All contributions and improvements to this plugin are welcome! To run the tests 
 
 The Frontline Chat and SMS Transfers plugin adds a **Transfer** button near the **End Chat** button that comes out of the box with Flex. Clicking this button opens up the standard [WorkerDirectory Flex component](https://www.twilio.com/docs/flex/ui/components#workerdirectory) with Agents and Queues tab.  A new custom directory tab is added to the standard WorkerDirectory component that contains a list of Frontline agents (TaskRouter [Workers](https://www.twilio.com/docs/taskrouter/api/worker)). Upon selecting a Frontline agent from the list and clicking the transfer icon, the plugin will initiate a transfer of the customer chat or SMS conversation to the specified Frontline agent.
 
-Key Points to Note
+*Key Points to Note*
 
 1. Frontline does not use Twilio TaskRouter in the same way as Flex. TaskRouter is only used to store the list of available Frontline agents. Frontline doesn't use Tasks for assigning work to agents. Instead it leverages the Twilio Conversations API. Conversations are assigned to Frontline workers directly via the [Frontline Integration Service](https://www.twilio.com/docs/frontline/frontline-integration-service).
 
