@@ -64,32 +64,9 @@ To deploy this plugin, you will need:
 
 All contributions and improvements to this plugin are welcome! To run the tests of the plugin: `npm run test`.
 
-### Twilio Account Settings
-
-Before we begin, we need to collect all the config values we need to run this Flex plugin:
-
-| Config&nbsp;Value | Description                                                                                                                                            |
-| :---------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Account&nbsp;Sid  | Your primary Twilio account identifier - find this [in the Console](https://www.twilio.com/console).                                                   |
-| Auth Token        | Used to create an API key for future CLI access to your Twilio Account - find this [in the Console](https://www.twilio.com/console).                   |
-| Workspace SID     | Your Flex Task Assignment workspace SID - find this [in the Console TaskRouter Workspaces page](https://www.twilio.com/console/taskrouter/workspaces). |
-| Queue SID(s)      | The unique IDs of the Flex task queues you wish to use for chat or SMS transfers - find this in the Console TaskRouter TaskQueues page.                |
-
 ## Plugin Details
 
 The Frontline Chat and SMS Transfers plugin adds a **Transfer** button near the **End Chat** button that comes out of the box with Flex. Clicking this button opens up the standard [WorkerDirectory Flex component](https://www.twilio.com/docs/flex/ui/components#workerdirectory) with Agents and Queues tab.  To this component is added a new custom directory tab that contains a list of Frontline workers. Upon selecting a Frontline agent, this plugin will initiate a transfer of the customer chat or SMS conversation to the specified Frontline worker (agent).
-
-![Chat Transfer UI](https://indigo-bombay-5783.twil.io/assets/chat-transfer.gif)
-
-Because Flex does not natively support transferring tasks to Frontline, this plugin works by creating a new Frontline conversation. The original Flex task is linked to the new Frontline conversation to be compatible with Flex Insights reporting.
-
-It is up to you to implement the necessary TaskRouter routing rules to send the task to the specified queue or worker. To aid you in this, three new attributes within [`functions/transfer-chat.js`](functions/functions/transfer-chat.js) will be added to your tasks: `targetSid`, `transferTargetType`, and `ignoreAgent`:
-
-| Attribute            | Expected Setting                                                                                                                                                                                                                                                                                                                                                     |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `targetSid`          | Worker or Queue Sid which will be used to determine if you are transferring to a worker or a queue.                                                                                                                                                                                                                                                                  |
-| `transferTargetType` | Can be set to `worker` or `queue` and lets your workflow route the task to a specific agent or queue. If you are routing the task to a specific worker, we recommend you have a queue like the "Everyone" queue where all workers are members of the queue. Additionally, set the `targetSid` to the Sid of the worker you want to transfer the chat or SMS task to. |
-| `ignoreAgent`        | This will be populated by the name of the agent who initiated the chat/SMS transfer. This ensures that the last agent to transfer the task will not receive the transfer they initiated, _assuming they are transferring the Task to a queue they are already a member of._                                                                                          |
 
 ---
 
