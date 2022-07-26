@@ -13,34 +13,26 @@ This plugin is based on both the [Chat and SMS Transfers](https://www.twilio.com
 This project is currently **Feature-Complete**. There is still some testing, polish, and documentation work to do, but all feature requirements have been satisfied. Please refer to the TODO list for details.
 
 ### TODO
-- [X] Upgrade Flex to latest (UI 2.0)
-- [X] Add Serverless structure
-- [X] Implement & incorporate Function for pulling Frontline agents 
-  - [X] Build Function
-  - [X] Incorporate function into the Directory Component
 - [ ] Enhancements/Bugfixes
-  - [X] Validate Twilio Signature
-  - [X] Sort workers alphabetically
-  - [X] Tab to front
-  - [X] "Directory" --> "Frontline"
   - [ ] Add Flex Signature check
-  - [ ] Leverage pre-existing Flex Insights standards if possible for tracking the transfer to Frontline and tie into reporting
-  - [ ] Determine the right pattern for selecting the conversation proxy address for the selected Frontline agent
-  - [ ] Determine the right pattern for retrieving the "friendly" name for the Flex and Frontline agents
-  - [ ] Determine the right pattern for retrieving the customer name
-  - [ ] Add logic for updating an existing Frontline conversation instead of creating a new one if a conversation already exists between the customer and the Frontline agent
-  - [ ] Remove the "warm transfer" option from the Frontline custom directory UI
-  - [ ] Decide if we want to downgrade to Flex UI 1.x or not
+  - [ ] Refactor project structure into PS format
+  - [ ] Add support for incoming Flex Web Chat conversations (currently only SMS is supported)
+  - [ ] Add support for updating an existing Frontline conversation instead of creating a new one if an active conversation already exists between the customer and the Frontline agent
+  - [ ] Leverage Flex Insights standards as required for tracking when a conversation is transfered to Frontline
+  - [ ] Finalize the pattern for retrieving/setting the Frontline conversation proxy address, i.e. which Frontline phone number to use, for the selected Frontline agent
+  - [ ] Finalize the pattern for retrieving/setting the name of the transferring Flex agent (used in the initial message of the Frontline conversation)
+  - [ ] Finalize the pattern for retrieving/setting the name of the Frontline agent (used in the initial message of the Frontline conversation and the final message of the Flex conversation)
+  - [ ] Finalize the pattern for retrieving/setting the customer name (used as the "friendly name" of the Frontline conversation and in the initial message of the Frontline conversation)
+ agent
+  - [ ] Remove/disable the "warm transfer" icon from the Frontline custom directory UI 
+  - [ ] Decide whether or not to downgrade to Flex UI 1.0
   - [ ] FUTURE - Add support for other channels, e.g. voice, WhatsApp, etc.
 - [ ] Test
   - [ ] Invalid Signature
   - [ ] Function errors
   - [ ] Transfer failures
+  - [ ] Transfer when a conversation between Frontline agent and customer already exists
 - [ ] Flesh out the README
-  - [ ] Demo
-    - [ ] Media Branch
-    - [ ] Recording
-  - [ ] Setup/Configuration
 
 ## Set up
 
