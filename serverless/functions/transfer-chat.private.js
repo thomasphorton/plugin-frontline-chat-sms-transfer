@@ -23,16 +23,20 @@ exports.handler = JWEValidator(async function (context, event, callback) {
   // parse data form the incoming http request
   const { taskSid, flexWorker, frontlineWorker } = event;
 
+  console.log(frontlineWorker);
+
   // retrieve task attributes
   const task = await client.taskrouter.workspaces(context.WORKSPACE_SID).tasks(taskSid).fetch();
   let taskAttributes = JSON.parse(task.attributes);
 
   var frontlineConversation;
 
+  console.log(taskAttributes);
+
   try {
     // create a new frontline conversation
     frontlineConversation = await frontlineClient.conversations.conversations.create({
-      friendlyName: taskAttributes.customerAddress
+      // friendlyName: taskAttributes.customerAddress
     });
 
     //get proxy phone number for selected frontline worker
