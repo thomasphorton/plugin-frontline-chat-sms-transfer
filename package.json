@@ -1,6 +1,6 @@
 {
   "name": "plugin-frontline-chat-sms-transfer",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "description": "Plugin that helps Flex contact center agents transfer calls to Frontline agents or queues",
   "scripts": {
@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@twilio/flex-ui": "2.0.0-beta.1",
+    "husky": "^8.0.1",
     "react-test-renderer": "17.0.2"
   }
 }

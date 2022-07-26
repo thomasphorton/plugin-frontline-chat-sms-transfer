@@ -118,7 +118,7 @@ You need to deploy the function associated with the Chat and SMS Transfers plugi
 1. Change into the serverless directory and rename `.env.example`.
 
     ```bash
-    cd functions && cp .env.example .env
+    cd serverless && cp .env.example .env
     ```
 
 2. Open `.env` with your text editor and set the environment variables mentioned in the file.
@@ -172,6 +172,10 @@ You need to modify the source file to include the serverless domain of the funct
     ```
     # Paste the Function deployment domain
     REACT_APP_SERVERLESS_FUNCTION_DOMAIN='https://plugin-frontline-chat-sms-transfer-functions-xxxx-dev.twil.io';
+    ```
+3. Create `appConfig.js` from the example file.
+    ```bash
+    cp ./public/appConfig.example.js ./public/appConfig.js
     ```
 3. When you are ready to deploy the plugin, run the following in a command shell:
 

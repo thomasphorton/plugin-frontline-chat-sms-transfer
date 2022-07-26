@@ -3,6 +3,8 @@ const JWEValidator = require('twilio-flex-token-validator').functionValidator;
 
 exports.handler = JWEValidator(async function (context, event, callback) {
 
+  console.log(process.env);
+
   const accountSid = process.env.FRONTLINE_ACCOUNT_SID;
   const authToken = process.env.FRONTLINE_AUTH_TOKEN;
   const client = require('twilio')(accountSid, authToken);
