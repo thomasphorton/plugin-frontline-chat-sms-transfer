@@ -6,8 +6,7 @@
   "scripts": {
     "postinstall": "flex-plugin pre-script-check",
     "lint": "eslint --ext js src/ functions/functions/",
-    "lint:fix": "npm run lint -- --fix",
-    "prepare": "husky install"
+    "lint:fix": "npm run lint -- --fix"
   },
   "dependencies": {
     "@emotion/css": "^11.9.0",
@@ -26,7 +25,6 @@
   },
   "devDependencies": {
     "@twilio/flex-ui": "2.0.0-beta.1",
-    "husky": "^8.0.1",
     "react-test-renderer": "17.0.2"
   }
 }

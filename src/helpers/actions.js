@@ -27,6 +27,8 @@ export const transferOverride = async (payload, original) => {
     await channel.source.leave();
   }
 
+  console.log(TaskHelper);
+
   /*
    * instantiate the manager to get useful info like user identity and token
    * build the request to initiate the transfer
@@ -36,7 +38,8 @@ export const transferOverride = async (payload, original) => {
     Token: manager.user.token,
     taskSid: payload.task.taskSid,
     flexWorker: manager.user,
-    frontlineWorker: payload.targetWorker
+    frontlineWorker: payload.targetWorker,
+    customerFriendlyName: 'custom friendly name'
   };
 
   // initiate the transfer
