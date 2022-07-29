@@ -31,16 +31,36 @@ exports.handler = JWEValidator(async function (context, event, callback) {
 
   var frontlineConversation;
 
+  console.log('taskAttributes');
   console.log(taskAttributes);
+  console.log('frontlineWorker:');
+  console.log(frontlineWorker);
 
   try {
+
+    console.log('Creating conversation...');
+
+    taskAttributes.customerName = await getCustomerName(taskAttributes);
+
+    await client.taskrouter
+      .workspaces(context.WORKSPACE_SID)
+      .tasks(taskSid)
+      .update({
+        attributes: JSON.stringify(taskAttributes),
+      });
+
     // create a new frontline conversation
     frontlineConversation = await frontlineClient.conversations.conversations.create({
-      // friendlyName: taskAttributes.customerAddress
+      friendlyName: taskAttributes.customerName
     });
+
+    console.log(`Conversation ${frontlineConversation.friendlyName} created in Frontline Account`);
+    console.log(frontlineConversation);
 
     //get proxy phone number for selected frontline worker
     const frontlinePhoneNumber = (await frontlineClient.incomingPhoneNumbers.list({limit: 1})).pop().phoneNumber;
+
+    console.log(`Frontline proxy phone number: ${frontlinePhoneNumber}`);
 
     // add the selected frontline worker to the conversation
     const frontlineAgentParticipant = await frontlineClient.conversations.conversations(frontlineConversation.sid)
@@ -50,12 +70,18 @@ exports.handler = JWEValidator(async function (context, event, callback) {
         'messagingBinding.projectedAddress': frontlinePhoneNumber
       });
 
+    console.log(`Frontline Agent Participant Added`);
+    console.log(frontlineAgentParticipant);
+
     // add the customer to the conversation
     const customerParticipant = await frontlineClient.conversations.conversations(frontlineConversation.sid)
     .participants
     .create({
-        'messagingBinding.address': taskAttributes.customerAddress
+        'messagingBinding.address': taskAttributes.name
       });
+
+    console.log(`Customer Participant Added`);
+    console.log(customerParticipant);
 
     // send a message to the customer and the frontline agent on the new conversation that provides some context to the frontline agent about the transfer
     const message2 = await frontlineClient.conversations.conversations(frontlineConversation.sid)
@@ -64,6 +90,8 @@ exports.handler = JWEValidator(async function (context, event, callback) {
         author: frontlineWorker.friendlyName,
         body: 'Hi ' + taskAttributes.customerName + '! ' + flexWorker.identity + ' told me that you were looking for assistance. How can I help you today?'
       });
+
+    console.log('Transfer message created');
 
     // update the task to link to the new conversation in Frontline  
     taskAttributes.frontlineConversationSid = frontlineConversation.sid;
@@ -75,13 +103,20 @@ exports.handler = JWEValidator(async function (context, event, callback) {
         attributes: JSON.stringify(taskAttributes),
       });
 
+    console.log(`TaskRouter task updated`);
+
+    console.log('conversationSid:')
+    console.log(taskAttributes.channelSid);
+
     // send a message to the customer on the original conversation to let them know that they should expect a communication from the frontline agent at a specific number
-    const message1 = await client.conversations.conversations(taskAttributes.conversationSid)
+    const message1 = await client.conversations.conversations(taskAttributes.channelSid)
     .messages
     .create({
       author: frontlineWorker.friendlyName,
       body: 'Thank you ' + taskAttributes.customerName + '. You should expect to hear from ' + frontlineWorker.friendlyName + ' on '  + frontlinePhoneNumber
     });
+
+    console.log(`Flex closing message sent`);
 
     responseBody.success = true;
     responseBody.payload.conversationSid = frontlineConversation.sid;  
@@ -115,3 +150,7 @@ exports.handler = JWEValidator(async function (context, event, callback) {
 
   return callback(null, response);
 });
+
+const getCustomerName = async (taskAttributes) => {
+  return 'Tom Horton';
+}
