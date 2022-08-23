@@ -38,8 +38,7 @@ export const transferOverride = async (payload, original) => {
     Token: manager.user.token,
     taskSid: payload.task.taskSid,
     flexWorker: manager.user,
-    frontlineWorker: payload.targetWorker,
-    customerFriendlyName: 'custom friendly name'
+    frontlineTaskRouterWorker: payload.targetWorker
   };
 
   // initiate the transfer

@@ -2,9 +2,9 @@
 <img  src="https://static0.twilio.com/marketing/bundles/marketing/img/logos/wordmark-red.svg"  alt="Twilio"  width="250"  />
 </a>
 
-# Frontline Chat and SMS Transfers
+# Frontline SMS Transfers
 
-The Frontline Chat and SMS Transfers plugin helps contact center agents transfer customer Chats and SMS conversations to Frontline workers.
+The Frontline SMS Transfers plugin helps contact center agents transfer customer Chats and SMS conversations to Frontline workers.
 
 This plugin is based on both the [Chat and SMS Transfers](https://www.twilio.com/docs/flex/solutions-library/chat-and-sms-transfers) plugin from the Twilio Flex solutions library and the [Custom Directory](https://github.com/twilio-professional-services/plugin-custom-directory) plugin. It includes code for [Twilio Functions](https://www.twilio.com/docs/runtime/functions) as well as frontend UI code in the form of a [Flex plugin](https://www.twilio.com/docs/flex/quickstart/getting-started-plugin).
 
@@ -26,11 +26,11 @@ This project is currently **Feature-Complete**. There is still some testing, pol
   - [ ] Add Flex Signature check
   - [ ] Leverage pre-existing Flex Insights standards if possible for tracking the transfer to Frontline and tie into reporting
   - [ ] Determine the right pattern for selecting the conversation proxy address for the selected Frontline agent
-  - [ ] Determine the right pattern for retrieving the "friendly" name for the Flex and Frontline agents
-  - [ ] Determine the right pattern for retrieving the customer name
+  - [X] Determine the right pattern for retrieving the "friendly" name for the Flex and Frontline agents
+  - [X] Determine the right pattern for retrieving the customer name
   - [ ] Add logic for updating an existing Frontline conversation instead of creating a new one if a conversation already exists between the customer and the Frontline agent
-  - [ ] Remove the "warm transfer" option from the Frontline custom directory UI
-  - [ ] Decide if we want to downgrade to Flex UI 1.x or not
+  - [X] Remove the "warm transfer" option from the Frontline custom directory UI
+  - [X] Decide if we want to downgrade to Flex UI 1.x or not
   - [ ] FUTURE - Add support for other channels, e.g. voice, WhatsApp, etc.
 - [ ] Test
   - [ ] Invalid Signature
@@ -66,7 +66,7 @@ All contributions and improvements to this plugin are welcome! To run the tests 
 
 ## Plugin Details
 
-The Frontline Chat and SMS Transfers plugin adds a **Transfer** button near the **End Chat** button that comes out of the box with Flex. Clicking this button opens up the standard [WorkerDirectory Flex component](https://www.twilio.com/docs/flex/ui/components#workerdirectory) with Agents and Queues tab.  A new custom directory tab is added to the standard WorkerDirectory component that contains a list of Frontline agents (TaskRouter [Workers](https://www.twilio.com/docs/taskrouter/api/worker)). Upon selecting a Frontline agent from the list and clicking the transfer icon, the plugin will initiate a transfer of the customer chat or SMS conversation to the specified Frontline agent.
+The Frontline SMS Transfers plugin adds a **Transfer** button near the **End Chat** button that comes out of the box with Flex. Clicking this button opens up the standard [WorkerDirectory Flex component](https://www.twilio.com/docs/flex/ui/components#workerdirectory) with Agents and Queues tab.  A new custom directory tab is added to the standard WorkerDirectory component that contains a list of Frontline agents (TaskRouter [Workers](https://www.twilio.com/docs/taskrouter/api/worker)). Upon selecting a Frontline agent from the list and clicking the transfer icon, the plugin will initiate a transfer of the customer chat or SMS conversation to the specified Frontline agent.
 
 **Key Points to Note**
 
@@ -97,23 +97,27 @@ After the above requirements have been met:
   npm install
   ```
 
-3. [Deploy your Twilio Functions](#twilio-serverless-deployment).
+3. In your Frontline account, [create an API Key](https://www.twilio.com/docs/glossary/what-is-an-api-key). Note the Key and Secret- you'll need this for your serverless environment variables.
 
-4. Set your environment variables.
+4. [Deploy your Twilio Functions](#twilio-serverless-deployment).
 
-    ```bash
-    npm run setup
-    ```
+5. Open `.env` with your text editor and set the environment variables for your development environment, as mentioned in the file.
 
-See [Twilio Account Settings](#twilio-account-settings) to locate the necessary environment variables.
+| Environment&nbsp;Variable | Description |
+| :------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FLEX_WORKSPACE_SID        | Your Flex Task Assignment workspace SID - find this [in the Console TaskRouter Workspaces page](https://www.twilio.com/console/taskrouter/workspaces). |
+| FRONTLINE_ACCOUNT_SID     | Your primary Twilio Frontline account identifier - find this [in the Console](https://www.twilio.com/console). |
+| FRONTLINE_API_KEY         | Used to create a Twilio client to interact with your Frontline account |
+| FRONTLINE_API_SECRET      | Used to create a Twilio client to interact with your Frontline account |
+| FRONTLINE_WORKSPACE_SID   | Your Frontline Task Router Workspace SID - find this [in the Console TaskRouter Workspaces page](https://www.twilio.com/console/taskrouter/workspaces). |
 
-5. Run the application.
+6. Run the application.
 
     ```bash
     twilio flex:plugins:start
     ```
 
-6. Navigate to [http://localhost:3000](http://localhost:3000).
+7. Navigate to [http://localhost:3000](http://localhost:3000).
 
 That's it!
 
@@ -129,17 +133,15 @@ You need to deploy the function associated with the Chat and SMS Transfers plugi
     cd serverless && cp .env.example .env
     ```
 
-2. Open `.env` with your text editor and set the environment variables mentioned in the file.
+2. Open `.env` with your text editor and set the environment variables for your production environment, as mentioned in the file.
 
-| Environment&nbsp;Variable | Description                                                                                                                                            |
-| :---------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ACCOUNT_SID  | Your primary Twilio Flex account identifier - find this [in the Console](https://www.twilio.com/console).                                                   |
-| AUTH_TOKEN        | Used to create an API key for future CLI access to your Twilio Flex Account - find this [in the Console](https://www.twilio.com/console).                   |
-| WORKSPACE_SID     | Your Flex Task Assignment workspace SID - find this [in the Console TaskRouter Workspaces page](https://www.twilio.com/console/taskrouter/workspaces). |
-| FRONTLINE_ACCOUNT_SID  | Your primary Twilio Frontline account identifier - find this [in the Console](https://www.twilio.com/console).                                                   |
-| FRONTLINE_AUTH_TOKEN        | Used to create an API key for future CLI access to your Twilio Frontline Account - find this [in the Console](https://www.twilio.com/console).                   |
-| FRONTLINE_WORKSPACE_SID     | Your Frontline Task Router Workspace SID - find this [in the Console TaskRouter Workspaces page](https://www.twilio.com/console/taskrouter/workspaces). |
-
+| Environment&nbsp;Variable | Description |
+| :------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FLEX_WORKSPACE_SID        | Your Flex Task Assignment workspace SID - find this [in the Console TaskRouter Workspaces page](https://www.twilio.com/console/taskrouter/workspaces). |
+| FRONTLINE_ACCOUNT_SID     | Your primary Twilio Frontline account identifier - find this [in the Console](https://www.twilio.com/console). |
+| FRONTLINE_API_KEY         | Used to create a Twilio client to interact with your Frontline account |
+| FRONTLINE_API_SECRET      | Used to create a Twilio client to interact with your Frontline account |
+| FRONTLINE_WORKSPACE_SID   | Your Frontline Task Router Workspace SID - find this [in the Console TaskRouter Workspaces page](https://www.twilio.com/console/taskrouter/workspaces). |
 
 3. Deploy your Twilio Serverless project to your Flex account using the Twilio CLI:
   
@@ -188,7 +190,7 @@ You need to modify the source file to include the serverless domain of the funct
 3. When you are ready to deploy the plugin, run the following in a command shell:
 
     ```bash
-    twilio flex:plugins:deploy --major --changelog "Initial release" --description "Chat and SMS Transfers to Frontline"
+    twilio flex:plugins:deploy --major --changelog "Initial release" --description "SMS Transfers to Frontline"
     ```
 
 #### Example Output
@@ -211,7 +213,7 @@ Run $ twilio flex:plugins:release --plugin plugin-frontline-chat-sms-transfer@1.
 
 After running the suggested next step with a meaningful name and description, navigate to the [Plugins Dashboard](https://flex.twilio.com/admin/) to review your recently deployed and released plugin. Confirm that the latest version is enabled for your contact center.
 
-You are all set to test Frontline Chat and SMS transfers in your Flex application!
+You are all set to test Frontline SMS transfers in your Flex application!
 
 ---
 
