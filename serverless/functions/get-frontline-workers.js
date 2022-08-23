@@ -3,11 +3,10 @@ const JWEValidator = require('twilio-flex-token-validator').functionValidator;
 
 exports.handler = JWEValidator(async function (context, event, callback) {
 
-  console.log(process.env);
-
-  const accountSid = process.env.FRONTLINE_ACCOUNT_SID;
-  const authToken = process.env.FRONTLINE_AUTH_TOKEN;
-  const client = require('twilio')(accountSid, authToken);
+  const frontlineAccountSid = process.env.FRONTLINE_ACCOUNT_SID;
+  const frontlineApiKey = process.env.FRONTLINE_API_KEY;
+  const frontlineApiSecret = process.env.FRONTLINE_API_SECRET;
+  const frontlineClient = require('twilio')(frontlineApiKey, frontlineApiSecret, { accountSid: frontlineAccountSid });
 
   const response = new Twilio.Response(); // This is what will be in the eventual HTTP response via the callback method
   const responseBody = {
@@ -20,7 +19,7 @@ exports.handler = JWEValidator(async function (context, event, callback) {
   try { 
 
     // First pull our Frontline workers
-    const workers = await client
+    const workers = await frontlineClient
       .taskrouter
       .workspaces(context.FRONTLINE_WORKSPACE_SID)
       .workers

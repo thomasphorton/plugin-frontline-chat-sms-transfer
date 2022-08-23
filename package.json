@@ -1,5 +1,5 @@
 {
-  "name": "plugin-frontline-chat-sms-transfer",
+  "name": "plugin-frontline-sms-transfer",
   "version": "1.0.0",
   "private": true,
   "description": "Plugin that helps Flex contact center agents transfer calls to Frontline agents or queues",
