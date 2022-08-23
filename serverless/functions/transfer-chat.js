@@ -74,31 +74,17 @@ exports.handler = JWEValidator(async function (context, event, callback) {
 
     console.log(`Frontline Worker Participant ${frontlineWorkerParticipant.sid} added to conversation ${frontlineConversationSid}`);
 
-    let customerMessageBindingAddress;
-
-    if (channelType === 'web') {
-      console.log('transferring web')
-      const customerParticipant = await frontlineClient.conversations.conversations(frontlineConversationSid)
-        .participants
-        .create({
-          identity: taskAttributes.customerAddress
-        });
-
-    } else if (channelType === 'sms') {
-      console.log('transferring sms');
-      customerMessageBindingAddress = await getCustomerPhoneNumber(taskAttributes);
+    // SMS specific
+    let customerMessageBindingAddress = await getCustomerPhoneNumber(taskAttributes);
     
-      // add the customer to the Frontline conversation
-      const customerParticipant = await frontlineClient.conversations.conversations(frontlineConversationSid)
-        .participants
-        .create({
-          'messagingBinding.address': customerMessageBindingAddress
-        });
+    // add the customer to the Frontline conversation
+    const customerParticipant = await frontlineClient.conversations.conversations(frontlineConversationSid)
+      .participants
+      .create({
+        'messagingBinding.address': customerMessageBindingAddress
+      });
 
-      console.log(`Customer Participant ${customerParticipant.sid} added to conversation ${frontlineConversationSid}`);
-    } else {
-      console.log(`channelType ${channelType} not supported`);
-    }
+    console.log(`Customer Participant ${customerParticipant.sid} added to conversation ${frontlineConversationSid}`);
 
     // send a message to the customer and the frontline agent on the Frontline conversation that provides some context to the frontline agent about the transfer
     const frontlineTransferMessage = await frontlineClient.conversations.conversations(frontlineConversationSid)
