@@ -41,7 +41,6 @@ exports.handler = JWEValidator(async function (context, event, callback) {
 
     let customerName = await getCustomerName(taskAttributes);
     
-
     let flexWorkerName = await getFlexWorkerName(flexWorker);
     let flexConversationSid = await getFlexConversationSid(taskAttributes);
 
@@ -99,8 +98,8 @@ exports.handler = JWEValidator(async function (context, event, callback) {
     // update the task to link to the new conversation in Frontline  
     taskAttributes.frontlineConversationSid = frontlineConversationSid;
     taskAttributes.transferReason = 'Transferred to Frontline Agent';
-    taskAttributes.transferTargetSid = 'TODO: PUT WORKER SID HERE';
-    taskAttributes.transferTargetIdentity = 'TODO: PUT WORKER IDENTITY HERE';
+    taskAttributes.frontlineTargetWorkerSid = frontlineTaskRouterWorker.sid;
+    taskAttributes.frontlineTargetWorkerIdentity = frontlineWorkerIdentity;
 
     await flexClient.taskrouter
       .workspaces(context.FLEX_WORKSPACE_SID)
@@ -110,6 +109,7 @@ exports.handler = JWEValidator(async function (context, event, callback) {
       });
 
     console.log(`TaskRouter task updated`);
+    console.log(taskAttributes);
 
     // send a message to the customer on the original conversation to let them know that they should expect a communication from the frontline agent at a specific number
     const flexTransferMessage = await flexClient.conversations.conversations(flexConversationSid)
