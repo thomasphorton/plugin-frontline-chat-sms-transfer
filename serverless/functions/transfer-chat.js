@@ -78,59 +78,84 @@ exports.handler = JWEValidator(async function (context, event, callback) {
     // SMS specific
     let customerMessageBindingAddress = await getCustomerPhoneNumber(taskAttributes);
     
-    // add the customer to the Frontline conversation
-    const customerParticipant = await frontlineClient.conversations.conversations(frontlineConversationSid)
+    try {
+      // add the customer to the Frontline conversation
+      const customerParticipant = await frontlineClient.conversations.conversations(frontlineConversationSid)
       .participants
       .create({
         'messagingBinding.address': customerMessageBindingAddress
       });
 
-    console.log(`Customer Participant ${customerParticipant.sid} added to conversation ${frontlineConversationSid}`);
+      console.log(`Customer Participant ${customerParticipant.sid} added to conversation ${frontlineConversationSid}`);
+    }
+    catch (e) {
 
-    // send a message to the customer and the frontline agent on the Frontline conversation that provides some context to the frontline agent about the transfer
-    const frontlineTransferMessage = await frontlineClient.conversations.conversations(frontlineConversationSid)
-      .messages
-      .create({
-        author: frontlineWorkerIdentity,
-        body: `Hi ${customerName}! ${flexWorkerName} told me that you were looking for assistance. How can I help you today?`
-      });
+      // If the error is not 'Group MMS with participant already exists', bubble up the error
+      if (e.code != 50438) {
+        throw e
+      }
+      else {
+        // If a conversation between the Frontline agent and the customer already exists,
+        // parse the existing conversation SID from the error message and send the transfer message to that conversation instead.
+        console.log('Conversation between Frontline agent and customer already exists');
 
-    console.log(`Frontline transfer message sent`);
+        let splitMessage = e.message.split(' ');
+        let existingConversationSid = splitMessage[splitMessage.length -1];
 
-    // update the task to link to the new conversation in Frontline  
-    taskAttributes.frontlineConversationSid = frontlineConversationSid;
-    taskAttributes.transferReason = 'Transferred to Frontline Agent';
-    taskAttributes.frontlineTargetWorkerSid = frontlineTaskRouterWorker.sid;
-    taskAttributes.frontlineTargetWorkerIdentity = frontlineWorkerIdentity;
+        console.log(`Sending transfer message to existing conversation: ${existingConversationSid}`)
+        frontlineConversationSid = existingConversationSid;
+      }
+    }
+    finally {
 
-    await flexClient.taskrouter
-      .workspaces(context.FLEX_WORKSPACE_SID)
-      .tasks(taskSid)
-      .update({
-        attributes: JSON.stringify(taskAttributes),
-      });
+      // send a message to the customer and the frontline agent on the Frontline conversation that provides some context to the frontline agent about the transfer
+      const frontlineTransferMessage = await frontlineClient.conversations.conversations(frontlineConversationSid)
+        .messages
+        .create({
+          author: frontlineWorkerIdentity,
+          body: `Hi ${customerName}! ${flexWorkerName} told me that you were looking for assistance. How can I help you today?`
+        });
 
-    console.log(`TaskRouter task updated`);
-    console.log(taskAttributes);
+      console.log(`Frontline transfer message sent`);
 
-    // send a message to the customer on the original conversation to let them know that they should expect a communication from the frontline agent at a specific number
-    const flexTransferMessage = await flexClient.conversations.conversations(flexConversationSid)
-      .messages
-      .create({
-        author: flexWorker.identity,
-        body: `Thank you ${customerName}. You should expect to hear from ${frontlineWorkerName} on ${frontlinePhoneNumber}.`
-      });
+      // update the task to link to the new conversation in Frontline  
+      taskAttributes.frontlineConversationSid = frontlineConversationSid;
+      taskAttributes.transferReason = 'Transferred to Frontline Agent';
+      taskAttributes.frontlineTargetWorkerSid = frontlineTaskRouterWorker.sid;
+      taskAttributes.frontlineTargetWorkerIdentity = frontlineWorkerIdentity;
 
-    console.log(`Flex transfer message sent`);
+      await flexClient.taskrouter
+        .workspaces(context.FLEX_WORKSPACE_SID)
+        .tasks(taskSid)
+        .update({
+          attributes: JSON.stringify(taskAttributes),
+        });
 
-    responseBody.success = true;
-    responseBody.payload.conversationSid = frontlineConversation.sid;  
+      console.log(`TaskRouter task updated`);
+      console.log(taskAttributes);
+
+      // send a message to the customer on the original conversation to let them know that they should expect a communication from the frontline agent at a specific number
+      const flexTransferMessage = await flexClient.conversations.conversations(flexConversationSid)
+        .messages
+        .create({
+          author: flexWorker.identity,
+          body: `Thank you ${customerName}. You should expect to hear from ${frontlineWorkerName} on ${frontlinePhoneNumber}.`
+        });
+
+      console.log(`Flex transfer message sent`);
+
+      responseBody.success = true;
+      responseBody.payload.conversationSid = frontlineConversation.sid;  
+
+    }
 
   }
   catch (e) {
 
     // We've caught an error! Handle the HTTP error response
     console.error(e.message || e);
+
+    console.log(e);
 
     response.setStatusCode(e.status || 500);
 
